@@ -6,6 +6,7 @@ from typing import Optional, List, Union
 import logging
 import uuid
 import re
+import os
 
 # Import your service functions
 from services.script import generate_script
@@ -46,6 +47,7 @@ class NewsInput(BaseModel):
     script_model: Optional[str] = None
     asset_type: Optional[str] = None
     asset_source: Optional[str] = None
+    audio_file_path: Optional[str] = None
     request_id: Optional[str] = None  # Optional incoming ID from frontend
 
 # For autopilot input, allowing nested data for video mixer
@@ -76,8 +78,17 @@ async def audio_endpoint(data: NewsInput):
     request_id = data.request_id or str(uuid.uuid4())
     logging.info(f"[{request_id}] Generating audio...")
     try:
-        audio = generate_audio(data.text)
-        return {"status": "done", "audio": audio, "request_id": request_id}
+        result = generate_audio(data.text)
+
+        if "error" in result:
+            raise Exception(result["error"])
+
+        return {
+            "status": "done",
+            "audio_url": result["audio_url"],
+            "audio_file_path_on_server": result["audio_file_path"],
+            "request_id": request_id
+        }
     except Exception as e:
         logging.error(f"[{request_id}] Audio generation failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -88,12 +99,16 @@ async def transcript_endpoint(data: NewsInput):
     request_id = data.request_id or str(uuid.uuid4())
     logging.info(f"[{request_id}] Generating transcript...")
     try:
-        transcript = generate_transcript(data.text)
-        return {"status": "done", "transcript": transcript, "request_id": request_id}
+        # data.text should contain the audio file path from the previous step
+        transcript_data = generate_transcript(data.text)
+        return {
+            "status": "done", 
+            "transcript": transcript_data, 
+            "request_id": request_id
+        }
     except Exception as e:
         logging.error(f"[{request_id}] Transcript generation failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
 
 @app.post("/assets")
 async def asset_endpoint(data: NewsInput):
@@ -118,54 +133,3 @@ async def video_endpoint(data: NewsInput):
         logging.error(f"[{request_id}] Video mixing failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-
-@app.post("/autopilot")
-async def autopilot_endpoint(data: AutopilotInput):
-    request_id = data.request_id or str(uuid.uuid4())
-    logging.info(f"[{request_id}] Starting autopilot video generation...")
-
-    try:
-        # Generate full script
-        script = generate_script(data.text)
-
-        # Split script into sentences
-        script_chunks = split_script_into_sentences(script)
-
-        audio_outputs = []
-        transcripts = []
-
-        for chunk in script_chunks:
-            if not chunk:
-                continue
-            audio = generate_audio(chunk)
-            audio_outputs.append(audio)
-            # If your audio generation returns a transcript field, collect it
-            if isinstance(audio, dict) and 'transcript' in audio:
-                transcripts.append(audio['transcript'])
-
-        assets = generate_assets(data.text)
-
-        # Prepare a payload dictionary for video mixer if it expects dict input
-        video_input = {
-            "script": script,
-            "audio": audio_outputs,
-            "transcript": transcripts,
-            "assets": assets
-        }
-
-        video_url = generate_video(video_input)
-
-        return {
-            "status": "done",
-            "job_id": request_id,
-            "request_id": request_id,
-            "script": script,
-            "audio": audio_outputs,
-            "transcript": transcripts,
-            "assets": assets,
-            "video_url": video_url
-        }
-
-    except Exception as e:
-        logging.error(f"[{request_id}] Autopilot failed: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
