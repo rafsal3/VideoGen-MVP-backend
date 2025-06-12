@@ -9,7 +9,7 @@ import re
 import os
 
 # Import your service functions
-from services.script import generate_script
+from services.script import generate_script_json_string
 from services.audio import generate_audio
 from services.transcript import generate_transcript
 from services.assets import generate_assets
@@ -66,7 +66,7 @@ async def script_endpoint(data: NewsInput):
     request_id = data.request_id or str(uuid.uuid4())
     logging.info(f"[{request_id}] Generating script...")
     try:
-        script = generate_script(data.text)
+        script = generate_script_json_string(data.text)
         return {"status": "done", "script": script, "request_id": request_id}
     except Exception as e:
         logging.error(f"[{request_id}] Script generation failed: {e}")

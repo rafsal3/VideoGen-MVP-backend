@@ -1,13 +1,14 @@
-from google import genai
+import google.generativeai as genai
 
-client = genai.Client(api_key="AIzaSyBi3iPOsqyifA5WF--2FV79W9ZIGnVg4hk")
+# Configure the API key (do this once before using the model)
+genai.configure(api_key="AIzaSyBi3iPOsqyifA5WF--2FV79W9ZIGnVg4hk")
 
-
+# Create the model instance
+model = genai.GenerativeModel(model_name="gemini-1.5-flash")  # or "gemini-1.5-pro"
 
 def script_ai(summary: str) -> dict:
-    response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents="explain the meaning of the word " + summary + " in one line."
+    response = model.generate_content(
+        f"Explain the meaning of the word '{summary}' in three line."
     )
     print(response.text)
     return response.text
