@@ -1,130 +1,25 @@
 {
-    "text": "Sentences. Colors are hues of light perceived by the eye. They describe the visual appearance of objects. They can evoke emotions and have symbolic meanings.",
+    "text": "Jobs are paid employment.",
     "words": [
         {
+            "start": 160,
+            "end": 400,
+            "word": "Jobs"
+        },
+        {
             "start": 400,
-            "end": 880,
-            "word": "Sentences."
-        },
-        {
-            "start": 1360,
-            "end": 1960,
-            "word": "Colors"
-        },
-        {
-            "start": 1960,
-            "end": 2200,
+            "end": 560,
             "word": "are"
         },
         {
-            "start": 2200,
-            "end": 2560,
-            "word": "hues"
+            "start": 560,
+            "end": 840,
+            "word": "paid"
         },
         {
-            "start": 2560,
-            "end": 2760,
-            "word": "of"
-        },
-        {
-            "start": 2760,
-            "end": 3040,
-            "word": "light"
-        },
-        {
-            "start": 3440,
-            "end": 4000,
-            "word": "perceived"
-        },
-        {
-            "start": 4000,
-            "end": 4200,
-            "word": "by"
-        },
-        {
-            "start": 4200,
-            "end": 4400,
-            "word": "the"
-        },
-        {
-            "start": 4400,
-            "end": 4800,
-            "word": "eye."
-        },
-        {
-            "start": 5040,
-            "end": 5320,
-            "word": "They"
-        },
-        {
-            "start": 5320,
-            "end": 5800,
-            "word": "describe"
-        },
-        {
-            "start": 5800,
-            "end": 6000,
-            "word": "the"
-        },
-        {
-            "start": 6000,
-            "end": 6360,
-            "word": "visual"
-        },
-        {
-            "start": 6360,
-            "end": 6880,
-            "word": "appearance"
-        },
-        {
-            "start": 6880,
-            "end": 7080,
-            "word": "of"
-        },
-        {
-            "start": 7080,
-            "end": 7760,
-            "word": "objects."
-        },
-        {
-            "start": 8000,
-            "end": 8280,
-            "word": "They"
-        },
-        {
-            "start": 8280,
-            "end": 8440,
-            "word": "can"
-        },
-        {
-            "start": 8440,
-            "end": 8800,
-            "word": "evoke"
-        },
-        {
-            "start": 8800,
-            "end": 9240,
-            "word": "emotions"
-        },
-        {
-            "start": 9240,
-            "end": 9480,
-            "word": "and"
-        },
-        {
-            "start": 9480,
-            "end": 9720,
-            "word": "have"
-        },
-        {
-            "start": 9720,
-            "end": 10280,
-            "word": "symbolic"
-        },
-        {
-            "start": 10280,
-            "end": 10800,
-            "word": "meanings."
+            "start": 840,
+            "end": 1360,
+            "word": "employment."
         }
     ]
 }

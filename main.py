@@ -7,6 +7,7 @@ import logging
 import uuid
 import re
 import os
+import json
 
 # Import your service functions
 from services.script import generate_script_json_string
@@ -61,6 +62,21 @@ def split_script_into_sentences(script: str) -> List[str]:
     sentences = re.split(r'(?<=[.!?]) +', script)
     return [s.strip() for s in sentences if s.strip()]
 
+def parse_script_sentences(script_data: str) -> List[str]:
+    """Extract sentences from script JSON or plain text"""
+    try:
+        # Try to parse as JSON first
+        parsed = json.loads(script_data)
+        if isinstance(parsed, dict) and 'sentences' in parsed:
+            return parsed['sentences']
+        elif isinstance(parsed, list):
+            return parsed
+    except json.JSONDecodeError:
+        pass
+    
+    # If not JSON, split by periods
+    return split_script_into_sentences(script_data)
+
 @app.post("/script")
 async def script_endpoint(data: NewsInput):
     request_id = data.request_id or str(uuid.uuid4())
@@ -78,15 +94,32 @@ async def audio_endpoint(data: NewsInput):
     request_id = data.request_id or str(uuid.uuid4())
     logging.info(f"[{request_id}] Generating audio...")
     try:
-        result = generate_audio(data.text)
-
-        if "error" in result:
-            raise Exception(result["error"])
+        # Parse the script to get individual sentences
+        sentences = parse_script_sentences(data.text)
+        
+        if not sentences:
+            raise Exception("No sentences found in script")
+        
+        # Generate audio for each sentence
+        audio_results = []
+        for i, sentence in enumerate(sentences):
+            logging.info(f"[{request_id}] Generating audio for sentence {i+1}/{len(sentences)}")
+            result = generate_audio(sentence, segment_index=i, request_id=request_id)
+            
+            if "error" in result:
+                raise Exception(f"Failed to generate audio for sentence {i+1}: {result['error']}")
+            
+            audio_results.append({
+                "segment_index": i,
+                "sentence": sentence,
+                "audio_url": result["audio_url"],
+                "audio_file_path": result["audio_file_path"]
+            })
 
         return {
             "status": "done",
-            "audio_url": result["audio_url"],
-            "audio_file_path_on_server": result["audio_file_path"],
+            "audio_segments": audio_results,
+            "total_segments": len(audio_results),
             "request_id": request_id
         }
     except Exception as e:
@@ -132,4 +165,3 @@ async def video_endpoint(data: NewsInput):
     except Exception as e:
         logging.error(f"[{request_id}] Video mixing failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-

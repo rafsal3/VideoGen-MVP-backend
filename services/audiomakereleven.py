@@ -2,6 +2,8 @@ from dotenv import load_dotenv
 from elevenlabs.client import ElevenLabs
 from elevenlabs import play
 import os
+import uuid
+from datetime import datetime
 
 load_dotenv()
 
@@ -17,8 +19,19 @@ def read_script(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return file.read()
 
-def make_audio(script):
-    print("Generating Audio...")
+def make_audio(script, segment_index=0, request_id=None):
+    """
+    Generate audio for a script segment
+    
+    Args:
+        script: Text to convert to audio
+        segment_index: Index of the segment for unique naming
+        request_id: Request ID for tracking
+    
+    Returns:
+        File path of the generated audio or None if failed
+    """
+    print(f"Generating Audio for segment {segment_index}...")
 
     # Voice ID and model ID for ElevenLabs
     voice_id = "qwaVDEGNsBllYcZO1ZOJ"  # Replace with your desired voice ID
@@ -28,8 +41,13 @@ def make_audio(script):
     output_dir = "output"
     os.makedirs(output_dir, exist_ok=True)  # Create folder if it doesn't exist
 
-    # File path for the audio output
-    file_path = os.path.join(output_dir, "audio.mp3")
+    # Create unique filename for this segment
+    if not request_id:
+        request_id = str(uuid.uuid4())[:8]
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"audio_segment_{segment_index}_{request_id}_{timestamp}.mp3"
+    file_path = os.path.join(output_dir, filename)
 
     try:
         # Generate audio using ElevenLabs API
@@ -46,9 +64,9 @@ def make_audio(script):
             for chunk in audio_stream:
                 audio_file.write(chunk)
 
-        print(f"Audio generated and saved as {file_path}")
+        print(f"Audio segment {segment_index} generated and saved as {file_path}")
         return file_path  # Return the file path of the saved audio file
 
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Error generating audio segment {segment_index}: {e}")
         return None
