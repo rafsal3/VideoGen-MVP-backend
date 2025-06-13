@@ -1,60 +1,40 @@
 {
-    "text": "A naturally occurring substance found in oceans, rivers and the atmosphere.",
+    "text": "Often a natural feature, sometimes man made.",
     "words": [
         {
             "start": 160,
-            "end": 280,
-            "word": "A"
+            "end": 360,
+            "word": "Often"
         },
         {
-            "start": 280,
-            "end": 640,
-            "word": "naturally"
+            "start": 360,
+            "end": 600,
+            "word": "a"
         },
         {
-            "start": 640,
-            "end": 1080,
-            "word": "occurring"
+            "start": 600,
+            "end": 1040,
+            "word": "natural"
         },
         {
-            "start": 1080,
-            "end": 1680,
-            "word": "substance"
+            "start": 1040,
+            "end": 1440,
+            "word": "feature,"
         },
         {
-            "start": 1840,
-            "end": 2160,
-            "word": "found"
+            "start": 1600,
+            "end": 2080,
+            "word": "sometimes"
         },
         {
-            "start": 2160,
-            "end": 2400,
-            "word": "in"
+            "start": 2080,
+            "end": 2360,
+            "word": "man"
         },
         {
-            "start": 2400,
-            "end": 2880,
-            "word": "oceans,"
-        },
-        {
-            "start": 3040,
-            "end": 3440,
-            "word": "rivers"
-        },
-        {
-            "start": 3440,
-            "end": 3680,
-            "word": "and"
-        },
-        {
-            "start": 3680,
-            "end": 3880,
-            "word": "the"
-        },
-        {
-            "start": 3880,
-            "end": 4560,
-            "word": "atmosphere."
+            "start": 2360,
+            "end": 2720,
+            "word": "made."
         }
     ]
 }
