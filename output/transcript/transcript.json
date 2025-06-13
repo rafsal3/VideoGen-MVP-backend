@@ -1,25 +1,60 @@
 {
-    "text": "Jobs are paid employment.",
+    "text": "A naturally occurring substance found in oceans, rivers and the atmosphere.",
     "words": [
         {
             "start": 160,
-            "end": 400,
-            "word": "Jobs"
+            "end": 280,
+            "word": "A"
         },
         {
-            "start": 400,
-            "end": 560,
-            "word": "are"
+            "start": 280,
+            "end": 640,
+            "word": "naturally"
         },
         {
-            "start": 560,
-            "end": 840,
-            "word": "paid"
+            "start": 640,
+            "end": 1080,
+            "word": "occurring"
         },
         {
-            "start": 840,
-            "end": 1360,
-            "word": "employment."
+            "start": 1080,
+            "end": 1680,
+            "word": "substance"
+        },
+        {
+            "start": 1840,
+            "end": 2160,
+            "word": "found"
+        },
+        {
+            "start": 2160,
+            "end": 2400,
+            "word": "in"
+        },
+        {
+            "start": 2400,
+            "end": 2880,
+            "word": "oceans,"
+        },
+        {
+            "start": 3040,
+            "end": 3440,
+            "word": "rivers"
+        },
+        {
+            "start": 3440,
+            "end": 3680,
+            "word": "and"
+        },
+        {
+            "start": 3680,
+            "end": 3880,
+            "word": "the"
+        },
+        {
+            "start": 3880,
+            "end": 4560,
+            "word": "atmosphere."
         }
     ]
 }

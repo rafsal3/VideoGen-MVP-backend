@@ -30,6 +30,7 @@ app.add_middleware(
 
 # Mount static audio directory
 app.mount("/static/audio", StaticFiles(directory="output"), name="audio")
+app.mount("/assets", StaticFiles(directory="output/assets"), name="assets")
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -130,18 +131,56 @@ async def audio_endpoint(data: NewsInput):
 @app.post("/transcript")
 async def transcript_endpoint(data: NewsInput):
     request_id = data.request_id or str(uuid.uuid4())
-    logging.info(f"[{request_id}] Generating transcript...")
+    logging.info(f"[{request_id}] Generating segmented transcript...")
+
     try:
-        # data.text should contain the audio file path from the previous step
-        transcript_data = generate_transcript(data.text)
-        return {
-            "status": "done", 
-            "transcript": transcript_data, 
-            "request_id": request_id
-        }
+        logging.info(f"[{request_id}] Raw input: {data.text[:200]}")  # Show more of the input
+        
+        # Parse the audio segments from the JSON string
+        audio_segments = json.loads(data.text)
+        logging.info(f"[{request_id}] Parsed {len(audio_segments)} audio segments")
+
+        if not isinstance(audio_segments, list):
+            raise Exception("Expected a list of audio segments")
+
+        if len(audio_segments) == 0:
+            raise Exception("No audio segments provided")
+
+        # Log the structure of the first segment for debugging
+        if audio_segments:
+            first_segment = audio_segments[0]
+            logging.info(f"[{request_id}] First segment structure: {list(first_segment.keys())}")
+
+        # Generate transcripts for all segments
+        transcript_result = generate_transcript(audio_segments)
+        
+        # Handle both old and new return formats
+        if isinstance(transcript_result, dict) and 'transcripts' in transcript_result:
+            # New format - return as is
+            return {
+                "status": "done",
+                "transcripts": transcript_result['transcripts'],
+                "total_segments": transcript_result.get('total_segments', len(transcript_result['transcripts'])),
+                "successful_transcripts": transcript_result.get('successful_transcripts', 0),
+                "request_id": request_id
+            }
+        else:
+            # Old format - wrap in transcripts key for consistency
+            return {
+                "status": "done",
+                "transcripts": transcript_result,
+                "total_segments": len(transcript_result) if isinstance(transcript_result, list) else 0,
+                "request_id": request_id
+            }
+
+    except json.JSONDecodeError as e:
+        logging.error(f"[{request_id}] JSON decode error: {e}")
+        logging.error(f"[{request_id}] Raw data: {data.text}")
+        raise HTTPException(status_code=400, detail=f"Invalid JSON format: {str(e)}")
     except Exception as e:
         logging.error(f"[{request_id}] Transcript generation failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/assets")
 async def asset_endpoint(data: NewsInput):

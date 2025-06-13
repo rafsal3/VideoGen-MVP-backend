@@ -1,11 +1,40 @@
-# transcript.py
-from services.transcriptmaker import make_transcript
-import json
+def generate_transcript(audio_segments: list) -> list:
+    """
+    Accepts a list of audio file paths and returns transcripts for each segment.
+    Returns a dict with 'transcripts' key containing the list of transcript results.
+    """
+    all_transcripts = []
+    
+    for i, segment in enumerate(audio_segments):
+        audio_path = segment.get("audio_file_path")
+        if not audio_path:
+            all_transcripts.append({
+                "segment_index": segment.get("segment_index", i),
+                "sentence": segment.get("sentence", ""),
+                "error": f"Missing audio path for segment {i}"
+            })
+            continue
 
-def generate_transcript(audio_file_path: str) -> dict:
-    transcript_data = make_transcript(audio_file_path)
-    print("Transcript generated:", transcript_data)
-    return transcript_data
+        try:
+            print(f"Processing transcript for segment {i}: {segment.get('sentence', '')[:50]}...")
+            transcript_data = make_transcript(audio_path)
+            all_transcripts.append({
+                "segment_index": segment.get("segment_index", i),
+                "sentence": segment.get("sentence", ""),
+                "transcript_text": transcript_data.get("text", ""),
+                "words": transcript_data.get("words", []),
+                "confidence": transcript_data.get("confidence", None)  # If available
+            })
+        except Exception as e:
+            print(f"Error transcribing segment {i}: {e}")
+            all_transcripts.append({
+                "segment_index": segment.get("segment_index", i),
+                "sentence": segment.get("sentence", ""),
+                "error": str(e)
+            })
+    
+    return all_transcripts
+
 
 # transcriptmaker.py
 import assemblyai as aai
