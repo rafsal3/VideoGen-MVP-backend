@@ -18,7 +18,7 @@ from services.script import generate_script_json_string
 from services.audio import generate_audio
 from services.transcript import generate_transcript
 from services.assets import generate_assets
-from services.mixer import generate_video
+from services.mixer import generate_video_from_segments
 
 # Initialize FastAPI
 app = FastAPI()
@@ -58,6 +58,12 @@ class NewsInput(BaseModel):
 
 class AutopilotInput(NewsInput):
     pass
+
+class MixerInput(BaseModel):
+    audio_segments: List[dict]
+    assets: List[dict]
+    show_subtitles: Optional[bool] = True
+    request_id: Optional[str] = None
 
 # --- Utility functions ---
 def split_script_into_sentences(script: str) -> List[str]:
@@ -182,13 +188,24 @@ async def asset_endpoint(data: NewsInput):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/mix")
-async def video_endpoint(data: NewsInput):
+async def video_endpoint(data: MixerInput):
     request_id = data.request_id or str(uuid.uuid4())
-    logging.info(f"[{request_id}] Generating final video...")
+    logging.info(f"[{request_id}] Generating final video with {len(data.audio_segments)} segments and {len(data.assets)} assets")
 
     try:
-        video_url = generate_video(data.text)
-        return {"status": "done", "video_url": video_url, "request_id": request_id}
+        # Generate video using the new function
+        video_url = generate_video_from_segments(
+            audio_segments=data.audio_segments,
+            assets=data.assets
+        )
+        
+        return {
+            "status": "done", 
+            "video_url": video_url, 
+            "request_id": request_id,
+            "segments_processed": len(data.audio_segments),
+            "assets_used": len(data.assets)
+        }
     except Exception as e:
         logging.error(f"[{request_id}] Video mixing failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))

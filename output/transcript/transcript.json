@@ -1,0 +1,35 @@
+{
+    "text": "A symbol of love and protection.",
+    "words": [
+        {
+            "start": 160,
+            "end": 280,
+            "word": "A"
+        },
+        {
+            "start": 280,
+            "end": 600,
+            "word": "symbol"
+        },
+        {
+            "start": 600,
+            "end": 760,
+            "word": "of"
+        },
+        {
+            "start": 760,
+            "end": 920,
+            "word": "love"
+        },
+        {
+            "start": 920,
+            "end": 1160,
+            "word": "and"
+        },
+        {
+            "start": 1160,
+            "end": 1680,
+            "word": "protection."
+        }
+    ]
+}
